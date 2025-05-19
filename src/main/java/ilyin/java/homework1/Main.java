@@ -11,12 +11,14 @@ public class Main {
         map.put(1, "Ivan");
         map.put(2,"Andrey");
 
-        map.outPut();
+        map.print();
 
 
         map.remove(1);
 
         System.out.println(map.get(2));
+
+        map.print();
 
     }
 }

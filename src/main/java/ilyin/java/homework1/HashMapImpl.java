@@ -5,13 +5,19 @@ package ilyin.java.homework1;
 public class HashMapImpl<K, V> {
 
 
-    public HashMapImpl() {
-        array = new Entry[defaultCapacity];
-    }
 
 
     private Entry<K,V> [] array;
     private int defaultCapacity = 20;
+    static final float LOAD_FACTOR = 0.75f;
+    private int size;
+
+
+    public HashMapImpl() {
+        array = new Entry[defaultCapacity];
+        size = 0;
+    }
+
 
     static class Entry<K, V>{
         K key;
@@ -27,11 +33,12 @@ public class HashMapImpl<K, V> {
 
 
     public void put(K newKey, V data) {
-        if (newKey == null)
-            return;
+        if (size >= array.length * LOAD_FACTOR) {
+            resize();
+        }
 
 
-        int hash = hash(newKey);
+        int hash = hash(newKey, array.length);
 
         Entry<K, V> newEntry = new Entry<K, V>(newKey, data, null);
 
@@ -62,7 +69,7 @@ public class HashMapImpl<K, V> {
     }
 
     public V get(K key) {
-        int hash = hash(key);
+        int hash = hash(key, array.length);
         if (array[hash] == null) {
             return null;
         } else {
@@ -79,7 +86,7 @@ public class HashMapImpl<K, V> {
 
     public boolean remove(K deleteKey) {
 
-        int hash = hash(deleteKey);
+        int hash = hash(deleteKey, array.length);
 
         if (array[hash] == null) {
             return false;
@@ -105,7 +112,7 @@ public class HashMapImpl<K, V> {
 
     }
 
-    public void outPut() {
+    public void print() {
 
         for (int i = 0; i < defaultCapacity; i++) {
             if (array[i] != null) {
@@ -119,11 +126,60 @@ public class HashMapImpl<K, V> {
 
     }
 
-    private int hash(K key) {
-        return Math.abs(key.hashCode()) % defaultCapacity;
+    public boolean containsKey(K key) {
+        return get(key) != null;
+    }
+
+    public boolean containsValue(V value) {
+        for (Entry<K, V> entry : array) {
+            while (entry != null) {
+                if (valuesEqual(entry.value, value)) {
+                    return true;
+                }
+                entry = entry.next;
+            }
+        }
+        return false;
+        }
+
+
+    private boolean valuesEqual(V value1, V value2) {
+        if (value1 == null) {
+            return value2 == null;
+        }
+        return value1.equals(value2);
     }
 
 
+    public void clear() {
+        array = new Entry[defaultCapacity];
+        size = 0;
+    }
+
+    private int hash(K key, int length) {
+        if (key == null) {
+            return 0;}
+        {
+            return Math.abs(key.hashCode()) % length;
+        }
+    }
+
+    private void resize() {
+
+        Entry<K, V>[] newArray = new Entry[array.length * 2];
+
+        for (Entry<K, V> entry : array) {
+            while (entry != null) {
+                Entry<K, V> next = entry.next;
+                int newIndex = hash(entry.key, newArray.length);
+                entry.next = newArray[newIndex];
+                newArray[newIndex] = entry;
+                entry = next;
+            }
+        }
+
+        array = newArray;
+    }
 
 }
 
