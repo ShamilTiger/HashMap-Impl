@@ -1,10 +1,10 @@
 package ilyin.java.homework1;
 
 
+import org.jetbrains.annotations.Nullable;
+
 
 public class HashMapImpl<K, V> {
-
-
 
 
     private Entry<K,V> [] array;
@@ -31,7 +31,7 @@ public class HashMapImpl<K, V> {
         }
     }
 
-
+    @Nullable
     public void put(K newKey, V data) {
         if (size >= array.length * LOAD_FACTOR) {
             resize();
@@ -66,8 +66,11 @@ public class HashMapImpl<K, V> {
             }
             previous.next = newEntry;
         }
+        size++;
     }
 
+
+    @Nullable
     public V get(K key) {
         int hash = hash(key, array.length);
         if (array[hash] == null) {
@@ -82,7 +85,6 @@ public class HashMapImpl<K, V> {
             return null;
         }
     }
-
 
     public boolean remove(K deleteKey) {
 
@@ -101,6 +103,7 @@ public class HashMapImpl<K, V> {
                         return true;
                     } else {
                         previous.next = current.next;
+                        size--;
                         return true;
                     }
                 }
@@ -109,7 +112,6 @@ public class HashMapImpl<K, V> {
             }
             return false;
         }
-
     }
 
     public void print() {
